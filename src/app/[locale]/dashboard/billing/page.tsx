@@ -24,16 +24,25 @@ export default function BillingPage() {
         setLoadingMethod(method);
 
         try {
-            // 在实际业务中这里将调用 /api/billing/{method}/create 获取重定向链接
-            if (method === "stripe") {
-                alert(`正在发起 Stripe 支付: $${amount}`);
+            // 这里我们调用的是专门针对 MVP 本地验证的一个包含实际流水操作逻辑的 "充值直达" API。
+            // 真实生产环境需要接入 Stripe Create Checkout Session 或是 Alipay SDK 返回付款重定向链接
+            const res = await fetch("/api/billing/mock", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ amount, method })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.ok) {
+                alert(`已在开发环境完成 ${method} 渠道的模拟充值：$${amount}\n您的余额已更新！`);
+                window.location.reload();
             } else {
-                alert(`正在发起 支付宝 支付: $${amount}`);
+                alert(data.error || "充值失败，请稍后再试");
             }
-            // 模拟网络请求
-            setTimeout(() => setLoadingMethod(null), 1000);
         } catch (error) {
             console.error(error);
+            alert("网络错误");
+        } finally {
             setLoadingMethod(null);
         }
     };
