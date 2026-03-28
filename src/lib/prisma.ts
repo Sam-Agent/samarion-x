@@ -11,7 +11,7 @@ declare global {
 }
 
 // 实例化选项：在开发环境可开启查询日志
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const prismaOptions: any = process.env.NODE_ENV === "development" ? {
     log: ['query', 'info', 'warn', 'error'],
 } : {};
