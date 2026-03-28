@@ -1,0 +1,186 @@
+// @author Sam, 2433022
+// Samrion.vip 数据库 Schema 定义文件 (Prisma)
+// 包含用户、API Key、供应商、调度规则、用量日志等完整表结构
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ----------------------------------------------------
+// 用户权限与认证模块
+// ----------------------------------------------------
+
+// 用户模型：存储基本信息和余额
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique // 邮箱（登录账号）
+  passwordHash String        // 密码哈希值
+  name         String?       // 用户名
+  role         String        @default("USER") // 角色: USER 或者 ADMIN
+  balance      Float         @default(0) // 账户余额 (由于 SQLite 不支持 Decimal，使用 Float 替代)
+  createdAt    DateTime      @default(now()) // 注册时间
+  
+  apiKeys      ApiKey[]      // 关联的 API Keys
+  usageLogs    UsageLog[]    // 关联的调用记录
+  transactions Transaction[] // 关联的充值扣费流水
+}
+
+// API Key 模型：用户生成的调用凭证
+model ApiKey {
+  id        String     @id @default(cuid())
+  key       String     @unique // 真实的 Key 字符串，例如: sk-samrion-xxx
+  name      String     // 用户为该 Key 起的名字
+  userId    String     // 所属用户 ID
+  user      User       @relation(fields: [userId], references: [id])
+  isActive  Boolean    @default(true) // 是否启用
+  lastUsed  DateTime?  // 最后使用时间
+  createdAt DateTime   @default(now()) // 创建时间
+
+  usageLogs UsageLog[] // 关联的调用记录
+}
+
+// ----------------------------------------------------
+// 核心中转与调度模块
+// ----------------------------------------------------
+
+// 模型 SKU 模型：暴露给前台用户的可用模型列表
+model ModelSku {
+  id              String     @id // 例如 "gpt-4o"
+  displayNameEn   String     // 英文显示名称
+  displayNameZh   String     // 中文显示名称
+  providerType    String     // 供应商类型: openai/anthropic/google/custom 等
+  upstreamModel   String     // 发送到上游的真实 model ID
+  inputPricePerM  Float      // 每百万 Token 输入价格 (USD)
+  outputPricePerM Float      // 每百万 Token 输出价格 (USD)
+  contextWindow   Int        // 上下文窗口大小
+  supportsVision  Boolean    @default(false) // 是否支持视觉
+  supportsTools   Boolean    @default(false) // 是否支持函数调用
+  supportsStream  Boolean    @default(true)  // 是否支持流式输出
+  status          String     @default("ACTIVE") // 状态: ACTIVE, HIDDEN, DEPRECATED
+  sortOrder       Int        @default(0) // 排序权重
+  description     String?    // 模型描述
+  createdAt       DateTime   @default(now()) // 创建时间
+
+  usageLogs       UsageLog[] // 关联的调用记录
+  routingRule     RoutingRule? // 对应的调度规则
+}
+
+// 供应商模型：统一管理各种大模型 API 提供商
+model Provider {
+  id        String   @id @default(cuid())
+  name      String   // 管理员自定义名称，如: OpenAI官方
+  type      String   // 类型: openai, anthropic, google 等
+  baseUrl   String   // 接口根地址
+  isActive  Boolean  @default(true) // 供应商级总开关
+  remark    String?  // 内部备注
+
+  channels  ProviderChannel[] // 该供应商下属的具体通道
+}
+
+// 供应商通道模型：具体的 API Key 实例
+model ProviderChannel {
+  id             String   @id @default(cuid())
+  providerId     String   // 归属供应商
+  provider       Provider @relation(fields: [providerId], references: [id])
+  name           String   // 通道名称，如: "Key-1"
+  apiKeyEnc      String   // 加密存储的上游 API Key
+  weight         Int      @default(100) // 加权轮询时的权重
+  priority       Int      @default(1)   // Failover时的优先级，越小越优先
+  rpmLimit       Int      @default(60)  // 每分钟请求上限
+  healthStatus   String   @default("OK") // 健康状态: OK, RATE_LIMITED, ERROR
+  avgLatencyMs   Int      @default(0)   // 探针测得的平均延迟(毫秒)
+  lastCheckAt    DateTime @default(now()) // 最后一次健康检查时间
+  isActive       Boolean  @default(true) // 是否启用该通道
+
+  routingRules   RoutingRuleChannel[] // 参与的调度规则
+  usageLogs      UsageLog[]           // 产生的调用记录
+}
+
+// 路由调度规则模型：定义某个 SKU 模型如何分发请求
+model RoutingRule {
+  id             String   @id @default(cuid())
+  modelSkuId     String   @unique // 关联的模型 SKU
+  modelSku       ModelSku @relation(fields: [modelSkuId], references: [id])
+  strategy       String   @default("round_robin") // 调度策略：round_robin, weighted_round_robin, failover, lowest_latency, random
+  maxRetries     Int      @default(3) // 最大重试次数
+  timeoutSeconds Int      @default(30) // 请求超时秒数
+
+  channels       RoutingRuleChannel[] // 配置的通道列表
+}
+
+// 路由规则与通道的关联表（多对多）
+model RoutingRuleChannel {
+  routingRuleId String
+  routingRule   RoutingRule     @relation(fields: [routingRuleId], references: [id])
+  channelId     String
+  channel       ProviderChannel @relation(fields: [channelId], references: [id])
+  sortOrder     Int             @default(0) // 在规则内的排列顺序
+
+  @@id([routingRuleId, channelId]) // 复合主键
+}
+
+// ----------------------------------------------------
+// 计费与财务模块
+// ----------------------------------------------------
+
+// 调用记录模型：记录每次请求的 Token 消耗与计费
+model UsageLog {
+  id               String   @id @default(cuid())
+  userId           String   // 消费者 ID
+  user             User     @relation(fields: [userId], references: [id])
+  apiKeyId         String   // 使用的本站 API Key
+  apiKey           ApiKey   @relation(fields: [apiKeyId], references: [id])
+  modelId          String   // 请求的 SKU 模型
+  model            ModelSku @relation(fields: [modelId], references: [id])
+  channelId        String?  // 实际走的上游通道
+  channel          ProviderChannel? @relation(fields: [channelId], references: [id])
+  promptTokens     Int      // 提示词 Token 数
+  completionTokens Int      // 补全 Token 数
+  totalTokens      Int      // 总 Token 数
+  costUsd          Float    // 实际扣去的余额 (USD)
+  latencyMs        Int      @default(0) // 记录本次请求的总延迟
+  createdAt        DateTime @default(now()) // 请求发生时间
+
+  @@index([userId, createdAt])
+}
+
+// 财务流水分录模型
+model Transaction {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  type          String   // 流水类型: RECHARGE, DEDUCTION, REFUND, MANUAL_ADJUST
+  amountUsd     Float    // 金额变更，正为收入，负为扣除
+  paymentMethod String?  // 支付方式: stripe, alipay, manual, system
+  paymentRef    String?  // 第三方系统订单号
+  status        String   @default("PENDING") // 状态: PENDING, SUCCESS, FAILED
+  remark        String?  // 附加备注信息
+  createdAt     DateTime @default(now())
+}
+
+// 充值套餐模型（可在后台配置）
+model PricingPlan {
+  id           String   @id @default(cuid())
+  nameEn       String   // 英文套餐名
+  nameZh       String   // 中文套餐名
+  amountUsd    Float    // 需要支付的金额 (USD)
+  bonusUsd     Float    @default(0) // 额外赠送的金额 (USD)
+  isActive     Boolean  @default(true) // 是否前台展示
+  sortOrder    Int      @default(0)    // 排序
+  badgeLabel   String?  // 徽章标签（例如："最受欢迎"）
+}
+
+// ----------------------------------------------------
+// 系统配置模块
+// ----------------------------------------------------
+
+// 动态系统设置表（键值对，无需改代码即可热更新设置）
+model SystemSetting {
+  key       String   @id
+  value     String   // 支持存储纯字符串或 JSON 字符串
+  updatedAt DateTime @updatedAt
+}
