@@ -1,0 +1,16 @@
+{
+    "Index": {
+        "title": "Samrion.vip - AI 模型中转聚合平台",
+        "subtitle": "一个 API Key，接入数十家主流 AI 模型。极致兼容，透明计费。",
+        "getStarted": "立即体验",
+        "docs": "查看文档"
+    },
+    "Navigation": {
+        "models": "模型列表",
+        "pricing": "价格方案",
+        "docs": "接入文档",
+        "dashboard": "控制台",
+        "login": "登录",
+        "register": "注册"
+    }
+}

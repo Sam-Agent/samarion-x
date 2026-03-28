@@ -7,13 +7,13 @@ import { PrismaClient } from "@prisma/client";
 
 // 根据运行环境声明全局 prisma 变量类型
 declare global {
-    // eslint-disable-next-line no-var
     var prisma: PrismaClient | undefined;
 }
 
 // 实例化选项：在开发环境可开启查询日志
-const prismaOptions = process.env.NODE_ENV === "development" ? {
-    log: ['query', 'info', 'warn', 'error'] as const,
+// @ts-ignore
+const prismaOptions: any = process.env.NODE_ENV === "development" ? {
+    log: ['query', 'info', 'warn', 'error'],
 } : {};
 
 // 在全局对象中缓存 Prisma 实例

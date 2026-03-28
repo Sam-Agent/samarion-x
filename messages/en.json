@@ -1,0 +1,16 @@
+{
+    "Index": {
+        "title": "Samrion.vip - AI Model Relay Platform",
+        "subtitle": "One API Key, access to dozens of mainstream AI models. Highly compatible, transparent billing.",
+        "getStarted": "Get Started",
+        "docs": "Documentation"
+    },
+    "Navigation": {
+        "models": "Models",
+        "pricing": "Pricing",
+        "docs": "Docs",
+        "dashboard": "Dashboard",
+        "login": "Log In",
+        "register": "Sign Up"
+    }
+}
