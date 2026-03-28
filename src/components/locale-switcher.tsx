@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 语言切换组件，允许用户在中英双语间无缝切换
  */
 "use client";

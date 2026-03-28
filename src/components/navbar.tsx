@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 顶部导航栏组件，包含 Logo、主导航链接、语言切换以及用户头像/登录按钮
  */
 "use client";

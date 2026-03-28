@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * Stripe Webhook 入口 (Boilerplate)
  */
 import { NextResponse } from "next/server";

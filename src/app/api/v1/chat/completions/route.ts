@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * OpenAI 兼容的中转代理接口与计费中间件
  * 支持标准且完全兼容的 v1/chat/completions 路由
  */

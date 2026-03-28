@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 根目录 middleware 配置：拦截请求以提供正确的多语言路由
  */
 import createMiddleware from 'next-intl/middleware';

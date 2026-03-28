@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * Admin 管理后台布局组件
  */
 import { redirect } from "next/navigation";

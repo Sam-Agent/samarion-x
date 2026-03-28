@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 兼容 OpenAI /v1/models 的接口
  * 返回平台所有 ACTIVE 状态的模型列表
  */

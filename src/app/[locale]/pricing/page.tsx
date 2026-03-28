@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 充值与套餐资费说明页
  */
 import { useTranslations } from "next-intl";

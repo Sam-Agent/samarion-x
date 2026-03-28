@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 全局认证状态提供者，用于在整个应用中共享 NextAuth 的 Session 内容
  */
 "use client";

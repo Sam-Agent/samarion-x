@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 平台首页（营销落地页）
  */
 import { useTranslations } from 'next-intl';

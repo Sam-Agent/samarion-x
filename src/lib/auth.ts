@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * NextAuth.js 全局配置文件，定义 JWT 策略与 Credentials 提供商
  */
 import { AuthOptions } from "next-auth";

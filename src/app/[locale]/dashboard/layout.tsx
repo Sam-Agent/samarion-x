@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 用户控制台布局组件，包含左侧边栏和主内容区
  */
 import { redirect } from "next/navigation";

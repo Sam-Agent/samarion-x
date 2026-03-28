@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * next-intl 路由配置文件，定义支持的语言及默认语言
  */
 import { defineRouting } from 'next-intl/routing';

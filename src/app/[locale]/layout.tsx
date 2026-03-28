@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 多语言根布局组件，包装整个应用以提供国际化支持
  */
 import { NextIntlClientProvider } from 'next-intl';

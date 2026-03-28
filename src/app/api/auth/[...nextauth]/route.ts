@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * NextAuth 的 API 路由入口 (App Router 模式)
  */
 import NextAuth from "next-auth";

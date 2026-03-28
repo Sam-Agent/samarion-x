@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * Admin 系统与支付设置页面
  */
 import prisma from "@/lib/prisma";

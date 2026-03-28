@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * 初始化并导出 Prisma 单例客户端，防止在开发环境中热重载导致过多的并发数据库连接
  */
 

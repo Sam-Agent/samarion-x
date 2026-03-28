@@ -1,5 +1,5 @@
 /**
- * @author Sam, 2433022
+ * @author Sam, 2433022, Email:Sam52anan@gmail.com
  * next-intl 请求配置文件，在每次请求时加载当前语言的翻译文件
  */
 import { getRequestConfig } from 'next-intl/server';
